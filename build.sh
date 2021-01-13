@@ -44,11 +44,11 @@
 
 # this script builds the C++ extension
 
-if [ -z ${OA_LINK_DIR+x} ]
-then
-    echo "OA_LINK_DIR is unset"
-    exit 1
-fi
+#if [ -z ${OA_LINK_DIR+x} ]
+#then
+#    echo "OA_LINK_DIR is unset"
+#    exit 1
+#fi
 
 if [ -z ${PYBAG_PYTHON+x} ]
 then
