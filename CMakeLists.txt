@@ -77,6 +77,9 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
 # add rpaths to the final install executable
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+# optional OpenAccess support, default to enabled 
+option(OPENACCESS_ENABLE "Build with OpenAccess support" ON)
+
 # Must use GNUInstallDirs to install libraries into correct
 # locations on all platforms.
 include(GNUInstallDirs)
@@ -89,6 +92,7 @@ add_subdirectory(pybind11_generics)
 
 # Include yaml-cpp
 find_package(yaml-cpp REQUIRED CONFIG)
+find_package(fmt REQUIRED CONFIG)
 
 # add python bindings for cbag
 pybind11_add_module(core
@@ -118,6 +122,8 @@ target_include_directories(core
   )
 
 target_link_libraries(core
+  INTERFACE
+  fmt::fmt-header-only
   PUBLIC
   cbag
   PRIVATE

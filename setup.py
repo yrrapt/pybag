@@ -52,39 +52,42 @@ from distutils.version import LooseVersion
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
-pkg_name = 'pybag'
+pkg_name = "pybag"
 
 
 class CMakePyBind11Extension(Extension):
-    def __init__(self, name, sourcedir=''):
+    def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = str(Path(sourcedir).resolve())
 
 
 class CMakePyBind11Build(build_ext):
     user_options = build_ext.user_options
-    user_options.append(('compiler-launcher=', None, "specify compiler launcher program"))
-    user_options.append(('build-type=', None, "CMake build type"))
+    user_options.append(("compiler-launcher=", None, "specify compiler launcher program"))
+    user_options.append(("build-type=", None, "CMake build type"))
+    user_options.append(("openaccess=", "enable", "Disable OpenAccess install"))
 
     def initialize_options(self):
         build_ext.initialize_options(self)
         # noinspection PyAttributeOutsideInit
-        self.compiler_launcher = ''
+        self.compiler_launcher = ""
         # noinspection PyAttributeOutsideInit
-        self.build_type = 'Debug'
+        self.build_type = "Debug"
+        self.openaccess = "enable"
 
     def run(self):
         try:
-            out = subprocess.check_output(['cmake', '--version'])
+            out = subprocess.check_output(["cmake", "--version"])
         except OSError:
-            raise RuntimeError('CMake must be installed to build the following extensions: ' +
-                               ', '.join(e.name for e in self.extensions))
+            raise RuntimeError(
+                "CMake must be installed to build the following extensions: "
+                + ", ".join(e.name for e in self.extensions)
+            )
 
-        if platform.system() == 'Windows':
-            cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)',
-                                                   out.decode()).group(1))
-            if cmake_version < '3.1.0':
-                raise RuntimeError('CMake >= 3.1.0 is required on Windows')
+        if platform.system() == "Windows":
+            cmake_version = LooseVersion(re.search(r"version\s*([\d.]+)", out.decode()).group(1))
+            if cmake_version < "3.1.0":
+                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
         for ext in self.extensions:
             self.build_extension(ext)
@@ -104,31 +107,34 @@ class CMakePyBind11Build(build_ext):
         # setup CMake initialization and build commands
         out_dir = str(Path(self.build_lib).resolve() / pkg_name)
         init_cmd = [
-            'cmake',
-            '-H.',
-            f'-B{self.build_temp}',
-            f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={out_dir}',
-            f'-DPYTHON_EXECUTABLE={sys.executable}',
-            f'-DCMAKE_BUILD_TYPE={self.build_type}',
+            "cmake",
+            "-H.",
+            f"-B{self.build_temp}",
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={out_dir}",
+            f"-DPYTHON_EXECUTABLE={sys.executable}",
+            f"-DCMAKE_BUILD_TYPE={self.build_type}",
         ]
-        build_cmd = ['cmake', '--build', self.build_temp, '--']
+        print("self.openaccess", self.openaccess)
+        if self.openaccess == "enable":
+            init_cmd + [f"-DOPENACCESS_ENABLE"]
+        build_cmd = ["cmake", "--build", self.build_temp, "--"]
 
         # handle compiler launcher
-        print('comp_launcher =', self.compiler_launcher)
+        print("comp_launcher =", self.compiler_launcher)
         if self.compiler_launcher:
-            init_cmd.append('-DCMAKE_CXX_COMPILER_LAUNCHER=' + self.compiler_launcher)
+            init_cmd.append("-DCMAKE_CXX_COMPILER_LAUNCHER=" + self.compiler_launcher)
 
         # handle Windows CMake arguments
         if platform.system() == "Windows":
-            if sys.maxsize > 2 ** 32:
-                init_cmd.append('-A')
-                init_cmd.append('x64')
-            build_cmd.append('/m')
+            if sys.maxsize > 2**32:
+                init_cmd.append("-A")
+                init_cmd.append("x64")
+            build_cmd.append("/m")
 
         # set up parallel build arguments
         num_workers = self._get_num_workers()
-        print(f'parallel={num_workers}')
-        build_cmd.append(f'-j{num_workers}')
+        print(f"parallel={num_workers}")
+        build_cmd.append(f"-j{num_workers}")
 
         # run CMake
         Path(self.build_temp).mkdir(parents=True, exist_ok=True)
@@ -137,29 +143,29 @@ class CMakePyBind11Build(build_ext):
         subprocess.check_call(init_cmd)
         subprocess.check_call(build_cmd)
         # generate stubs
-        subprocess.check_call(['./gen_stubs.sh'])
+        subprocess.check_call(["./gen_stubs.sh"])
 
         print()  # Add an empty line for cleaner output
 
 
 setup(
     name=pkg_name,
-    version='0.2',
-    author='Eric Chang',
-    author_email='info@bcanalog.com',
-    description='Python wrappers of cbag library using pybind11',
-    license='Apache-2.0',
+    version="0.2",
+    author="Eric Chang",
+    author_email="info@bcanalog.com",
+    description="Python wrappers of cbag library using pybind11",
+    license="Apache-2.0",
     install_requires=[],
     setup_requires=[],
     tests_require=[
-        'pytest',
-        'pytest-xdist',
+        "pytest",
+        "pytest-xdist",
     ],
     packages=[
         pkg_name,
     ],
-    package_dir={'': 'src'},
-    ext_modules=[CMakePyBind11Extension('all')],
-    cmdclass={'build_ext': CMakePyBind11Build},
+    package_dir={"": "src"},
+    ext_modules=[CMakePyBind11Extension("all")],
+    cmdclass={"build_ext": CMakePyBind11Build},
     zip_safe=False,
 )

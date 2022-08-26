@@ -5,6 +5,26 @@ Python wrapper for [CBAG](https://github.com/bluecheetah/cbag) library.
 This is a fork of [PYBAG] (https://github.com/ucb-art/pybag), which as of May 13th, 2019,
 has been taken offline temporarily.
 
+## Installation
+
+### With OpenAccess
+
+By default, installation uses OpenAccess, and can be performed with:
+
+```bash
+python -m pip install .
+```
+
+### Without OpenAccess
+
+To install without OpenAccess edit the `setup.cfg` file:
+
+```ini
+[build_ext]
+ ...
+openaccess = disable
+```
+
 ## Licensing
 
 This library is licensed under the Apache-2.0 license.  However, some source files are licensed
