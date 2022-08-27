@@ -56,26 +56,22 @@ limitations under the License.
 #include <cbag/layout/routing_grid.h>
 #include <cbag/layout/track_coloring.h>
 
-#ifdef OPENACCESS_ENABLE
+#ifndef  OPENACCESS_DISABLE
 #include <cbag/oa/database.h>
 #include <cbag/oa/main.h>
 #include <cbag/oa/read_lib.h>
 #include <cbag/oa/write_lib.h>
 #include <pybag/oa.h>
-#endif // OPENACCESS_ENABLE
 
 #include <pybag/schematic.h>
 
-#ifdef OPENACCESS_ENABLE
 using c_db = cbagoa::database;
-#endif // OPENACCESS_ENABLE
 
 namespace py = pybind11;
 namespace pyg = pybind11_generics;
 
 namespace pybag {
 
-#ifdef OPENACCESS_ENABLE
 namespace oa {
 
 using cell_key_t = cbagoa::cell_key_t;
@@ -117,10 +113,8 @@ void implement_lay_list(const c_db &db, const std::string &lib_name, const std::
 }
 
 } // namespace oa
-#endif // OPENACCESS_ENABLE
 } // namespace pybag
 
-#ifdef OPENACCESS_ENABLE
 namespace pyoa = pybag::oa;
 
 void bind_oa(py::module &m) {
@@ -159,4 +153,4 @@ void bind_oa(py::module &m) {
                py::arg("gds_fname"), py::arg("lib_name"), py::arg("layer_map"), py::arg("obj_map"),
                py::arg("grid"), py::arg("colors"));
 }
-#endif // OPENACCESS_ENABLE
+#endif // OPENACCESS_DISABLE

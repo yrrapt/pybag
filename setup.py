@@ -65,7 +65,7 @@ class CMakePyBind11Build(build_ext):
     user_options = build_ext.user_options
     user_options.append(("compiler-launcher=", None, "specify compiler launcher program"))
     user_options.append(("build-type=", None, "CMake build type"))
-    user_options.append(("openaccess=", "enable", "Disable OpenAccess install"))
+    user_options.append(("openaccess-disable=", "False", "Disable OpenAccess install"))
 
     def initialize_options(self):
         build_ext.initialize_options(self)
@@ -73,7 +73,7 @@ class CMakePyBind11Build(build_ext):
         self.compiler_launcher = ""
         # noinspection PyAttributeOutsideInit
         self.build_type = "Debug"
-        self.openaccess = "enable"
+        self.openaccess_disable = "False"
 
     def run(self):
         try:
@@ -114,9 +114,8 @@ class CMakePyBind11Build(build_ext):
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={self.build_type}",
         ]
-        print("self.openaccess", self.openaccess)
-        if self.openaccess == "enable":
-            init_cmd + [f"-DOPENACCESS_ENABLE"]
+        if self.openaccess_disable == "True":
+            init_cmd += ["-DOPENACCESS_DISABLE=ON"]
         build_cmd = ["cmake", "--build", self.build_temp, "--"]
 
         # handle compiler launcher

@@ -78,7 +78,10 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # optional OpenAccess support, default to enabled 
-option(OPENACCESS_ENABLE "Build with OpenAccess support" ON)
+option(OPENACCESS_DISABLE "Build without OpenAccess support" OFF)
+if(OPENACCESS_DISABLE)
+  add_compile_definitions(OPENACCESS_DISABLE)
+endif(OPENACCESS_DISABLE)
 
 # Must use GNUInstallDirs to install libraries into correct
 # locations on all platforms.
