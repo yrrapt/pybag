@@ -59,7 +59,7 @@ export BUILD_TYPE=${1:-Release}
 echo "CMAKE_BULD_TYPE: ${BUILD_TYPE}"
 cmake -H. -B_build/temp -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${WORK_DIR}/_build/lib/pybag \
       -DPYTHON_EXECUTABLE=${PYBAG_PYTHON} \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} || exit 1
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DOPENACCESS_DISABLE=ON 
 cmake --build _build/temp --target write_cv_yaml -- -j ${NUM_CORES}
 cmake --build _build/temp --target write_tech_info -- -j ${NUM_CORES}
 cmake --build _build/temp --target print_gds -- -j ${NUM_CORES}

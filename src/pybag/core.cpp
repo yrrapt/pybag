@@ -75,7 +75,9 @@ PYBIND11_MODULE(core, m) {
     // make sure tech/routing grid are defined before binding gds
     bind_gds(m);
     // make sure routing grid and tr_colors are defined before binding OA
+    #ifndef OPENACCESS_DISABLE
     bind_oa(m);
+    #endif // OPENACCESS_DISABLE
     bind_rtree(m);
     bind_logging(m);
     bind_name(m);
